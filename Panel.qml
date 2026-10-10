@@ -245,7 +245,7 @@ Panel {
 
           PanelHero {
             width: parent.width
-            title: "The Hacker News"
+            title: "Hacker News"
             meta: root.fetchedLabel
             foreground: root.foreground
             fontFamily: root.fontFamily
