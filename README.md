@@ -49,7 +49,7 @@ polling, so the widget stays silent until you ask.
 connection. The fetch helper uses `curl` and `jq`.
 
 ```bash
-omarchy plugin add https://github.com/batusaribay/batusaribay.hackernews --enable
+omarchy plugin add https://github.com/batusaribay/omarchy-hackernews --enable
 ```
 
 To remove:
