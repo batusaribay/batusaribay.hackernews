@@ -1,8 +1,8 @@
 # Hacker News
 
-Lists recent headlines from [The Hacker News](thehackernews.com) in the Omarchy bar.
+Lists recent headlines from [The Hacker News](https://thehackernews.com) in the Omarchy bar.
 
-![Screenshot](assets/screenshot.png)
+![Screenshot](preview.png)
 
 ## Why
 
