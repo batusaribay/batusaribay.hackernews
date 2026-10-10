@@ -1,6 +1,6 @@
 # The Hacker News
 
-Lists recent headlines from The Hacker News in the Omarchy bar.
+Lists recent headlines from THN in the Omarchy bar.
 
 ![Screenshot](assets/screenshot.png)
 
@@ -45,9 +45,21 @@ polling, so the widget stays silent until you ask.
 
 ## Installation
 
+**Requirements:** an [Omarchy](https://omarchy.org) install with an internet
+connection. The fetch helper uses `curl` and `jq`.
+
 ```bash
-# This section will be filled when the plugin is released.
+omarchy plugin add https://github.com/batusaribay/batusaribay.hackernews --enable
 ```
+
+To remove:
+
+```bash
+omarchy plugin remove batusaribay.hackernews
+```
+
+The widget fetches nothing on its own; `~/.cache/omarchy-hackernews/` is only
+written when you press `r`. Remove that folder to drop the stored copy.
 
 ## License
 

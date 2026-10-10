@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "author": "batusaribay",
   "license": "MIT",
-  "description": "Lists recent headlines from The Hacker News in the Omarchy bar.",
+  "description": "Lists recent headlines from THN in the Omarchy bar.",
   "kinds": [
     "bar-widget"
   ],
