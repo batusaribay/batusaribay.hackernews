@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "batusaribay.hackernews",
+  "name": "The Hacker News",
+  "version": "0.1.0",
+  "author": "batusaribay",
+  "license": "MIT",
+  "description": "Lists recent headlines from The Hacker News in the Omarchy bar.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "The Hacker News",
+    "description": "Headlines from The Hacker News. Press r to fetch, Enter to open, a to send the story to your default agent, Esc to close.",
+    "category": "News",
+    "aliases": [
+      "news",
+      "hackernews",
+      "thehackernews",
+      "thn"
+    ],
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "maxItems": 7
+    },
+    "schema": [
+      {
+        "key": "maxItems",
+        "type": "integer",
+        "label": "Headlines to show",
+        "min": 3,
+        "max": 30,
+        "step": 1,
+        "defaultValue": 7
+      }
+    ]
+  }
+}
