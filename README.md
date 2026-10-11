@@ -55,15 +55,12 @@ connection. The fetch helper uses `curl` and `jq`.
 omarchy plugin add https://github.com/batusaribay/omarchy-hackernews --enable
 ```
 
-To remove:
+To remove (including the cache):
 
 ```bash
 omarchy plugin remove batusaribay.hackernews
+rm -rf "$HOME/.cache/omarchy-hackernews"
 ```
-
-The widget fetches nothing on its own; `~/.cache/omarchy-hackernews/` is only
-written when you refresh with `r`, and is read back automatically when the panel
-opens. Remove that folder to drop the stored copy.
 
 ## License
 
