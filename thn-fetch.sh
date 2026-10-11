@@ -7,6 +7,12 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/omarchy-hackernews"
 CACHE_FILE="$CACHE_DIR/feed.json"
 
+cached_only=false
+if [[ "${1:-}" == "--cached" ]]; then
+  cached_only=true
+  shift
+fi
+
 max_items="${1:-12}"
 case "$max_items" in
   '' | *[!0-9]*) max_items=12 ;;
@@ -32,6 +38,15 @@ normalize() {
 }
 
 mkdir -p "$CACHE_DIR"
+
+if [[ "$cached_only" == true ]]; then
+  if [[ -f "$CACHE_FILE" ]] && out="$(jq -c '.stale = true' "$CACHE_FILE" 2>/dev/null)"; then
+    printf '%s' "$out"
+  else
+    printf '%s' '{"ok":false,"stale":true,"source":"The Hacker News","updated":"","items":[],"error":""}'
+  fi
+  exit 0
+fi
 
 if raw="$(fetch_feed 2>/dev/null)" && out="$(printf '%s' "$raw" | normalize 2>/dev/null)"; then
   tmp="$CACHE_FILE.$$.tmp"

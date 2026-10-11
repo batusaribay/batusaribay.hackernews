@@ -17,6 +17,7 @@ Panel {
   property bool loading: false
   property bool stale: false
   property string errorText: ""
+  property bool savedChecked: false
 
   property int cursorIndex: 0
   property bool cursorActive: false
@@ -74,8 +75,19 @@ Panel {
     items = parsed.items
     stale = parsed.stale
     errorText = parsed.ok ? "" : Model.sanitizeText(parsed.error || "", 60)
-    if (parsed.ok)
+    if (parsed.ok && !parsed.stale)
       lastFetchMs = Date.now()
+    if (cursorIndex >= items.length)
+      cursorIndex = Math.max(0, items.length - 1)
+  }
+
+  function loadSavedPayload(raw) {
+    var parsed = Model.parsePayload(raw)
+    if (parsed.items.length === 0)
+      return
+    items = parsed.items
+    stale = true
+    errorText = ""
     if (cursorIndex >= items.length)
       cursorIndex = Math.max(0, items.length - 1)
   }
@@ -137,8 +149,11 @@ Panel {
   }
 
   onOpenedChanged: {
-    if (opened)
-      nowMs = Date.now()
+    if (!opened)
+      return
+    nowMs = Date.now()
+    if (items.length === 0 && !savedChecked && !fetchProcess.running && !cacheProcess.running)
+      cacheProcess.running = true
   }
 
   onCursorIndexChanged: ensureCursorVisible()
@@ -160,6 +175,17 @@ Panel {
       if (code !== 0 && root.errorText === "")
         root.errorText = Model.sanitizeText(fetchErr.text || "fetch failed", 60)
     }
+  }
+
+  Process {
+    id: cacheProcess
+    command: ["bash", root.scriptPath, "--cached"]
+    stdout: StdioCollector {
+      id: cacheOut
+      waitForEnd: true
+      onStreamFinished: root.loadSavedPayload(cacheOut.text)
+    }
+    onExited: root.savedChecked = true
   }
 
   Timer {
@@ -268,7 +294,7 @@ Panel {
             width: parent.width
             text: root.errorText !== ""
               ? ("Could not reach The Hacker News: " + root.errorText)
-              : "Offline — showing the last saved headlines."
+              : "Showing the last saved headlines."
             color: root.urgent
             font.family: root.fontFamily
             font.pixelSize: Style.font.bodySmall
