@@ -40,6 +40,8 @@ Panel {
   }
 
   readonly property string fetchedLabel: {
+    if (loading)
+      return "Fetching latest headlines…"
     if (lastFetchMs <= 0)
       return ""
     var s = Math.max(0, Math.floor((nowMs - lastFetchMs) / 1000))
