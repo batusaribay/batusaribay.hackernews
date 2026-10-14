@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "batusaribay.hackernews",
   "name": "Hacker News",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "batusaribay",
   "license": "MIT",
   "description": "Lists recent headlines from The Hacker News in the Omarchy bar.",

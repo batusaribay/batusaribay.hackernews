@@ -15,8 +15,6 @@ Panel {
 
   property var items: []
   property bool loading: false
-  property bool stale: false
-  property string errorText: ""
   property bool savedChecked: false
 
   property int cursorIndex: 0
@@ -32,7 +30,6 @@ Panel {
 
   readonly property color foreground: bar ? bar.foreground : Color.foreground
   readonly property color dim: Qt.darker(foreground, 1.55)
-  readonly property color urgent: bar ? bar.urgent : Color.urgent
   readonly property string fontFamily: bar ? bar.fontFamily : Style.font.family
 
   readonly property string scriptPath: {
@@ -66,30 +63,25 @@ Panel {
     if (fetchProcess.running)
       return
     loading = true
-    errorText = ""
     fetchProcess.running = true
   }
 
   function applyPayload(raw) {
     var parsed = Model.parsePayload(raw)
-    items = parsed.items
-    stale = parsed.stale
-    errorText = parsed.ok ? "" : Model.sanitizeText(parsed.error || "", 60)
-    if (parsed.ok && !parsed.stale)
-      lastFetchMs = Date.now()
-    if (cursorIndex >= items.length)
-      cursorIndex = Math.max(0, items.length - 1)
+    if (parsed.items.length > 0 || parsed.ok) {
+      items = parsed.items
+      if (cursorIndex >= items.length)
+        cursorIndex = Math.max(0, items.length - 1)
+    }
+    var fetchedAt = Date.parse(parsed.updated || "")
+    if (isFinite(fetchedAt) && fetchedAt > 0)
+      lastFetchMs = fetchedAt
   }
 
   function loadSavedPayload(raw) {
-    var parsed = Model.parsePayload(raw)
-    if (parsed.items.length === 0)
+    if (fetchProcess.running)
       return
-    items = parsed.items
-    stale = true
-    errorText = ""
-    if (cursorIndex >= items.length)
-      cursorIndex = Math.max(0, items.length - 1)
+    applyPayload(raw)
   }
 
   function moveCursor(dy) {
@@ -170,11 +162,7 @@ Panel {
       id: fetchErr
       waitForEnd: true
     }
-    onExited: function (code) {
-      root.loading = false
-      if (code !== 0 && root.errorText === "")
-        root.errorText = Model.sanitizeText(fetchErr.text || "fetch failed", 60)
-    }
+    onExited: root.loading = false
   }
 
   Process {
@@ -288,19 +276,6 @@ Panel {
             }
           }
 
-          Text {
-            textFormat: Text.PlainText
-            visible: root.errorText !== "" || (root.stale && root.items.length > 0)
-            width: parent.width
-            text: root.errorText !== ""
-              ? ("Could not reach The Hacker News: " + root.errorText)
-              : "Showing the last saved headlines."
-            color: root.urgent
-            font.family: root.fontFamily
-            font.pixelSize: Style.font.bodySmall
-            wrapMode: Text.WordWrap
-          }
-
           Column {
             id: listColumn
             visible: root.items.length > 0
@@ -341,7 +316,7 @@ Panel {
           Text {
             textFormat: Text.PlainText
             width: parent.width
-            text: "j / k  move      Enter  open      a  ask agent      c  copy link      r  refresh      Esc  close"
+            text: "j / k  move      Enter / o  open      a  ask agent      c  copy link      r  refresh      Esc  close"
             color: root.dim
             font.family: root.fontFamily
             font.pixelSize: Style.font.caption
